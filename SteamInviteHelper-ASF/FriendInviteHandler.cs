@@ -1,5 +1,6 @@
 ﻿using ArchiSteamFarm;
-using HtmlAgilityPack;
+using AngleSharp;
+using AngleSharp.Dom;
 using Newtonsoft.Json.Linq;
 using SteamKit2;
 using System;
@@ -17,8 +18,6 @@ namespace SteamInviteHelper_ASF
             SteamFriends steamFriends = Client.GetHandler<SteamFriends>();
             UserProfile userProfile = await UserProfile.BuildUserProfile(SteamID.ConvertToUInt64(), bot);
             Logger.LogDebug("[PROFILE DETAILS]: " + userProfile.ToString());
-
-            await processCommentedOnProfile(userProfile, bot);
 
             List<Action> actions = new List<Action>();
 
@@ -48,6 +47,9 @@ namespace SteamInviteHelper_ASF
 
             actions.Add(processProfileName(userProfile, bot));
             Logger.LogDebug("[ACTION PROFILE NAME]: " + processProfileName(userProfile, bot).action);
+
+            actions.Add(await processCommentedOnProfile(userProfile, bot));
+            Logger.LogDebug("[ACTION COMMENTED]: " + await processCommentedOnProfile(userProfile, bot));
 
             Config.FriendInviteConfigs.TryGetValue(bot, out Config config);
             List<string> actionpriority = config.ActionPriority;
@@ -98,7 +100,7 @@ namespace SteamInviteHelper_ASF
         {
             WebBrowser wb = bot.ArchiWebHandler.WebBrowser;
             string url = "http://steamrep.com/id2rep.php?steamID32=" + new SteamID(userProfile.steamId64).Render();
-            string result = (await wb.UrlGetToHtmlDocument(url)).Content.Text;
+            string result = (await wb.UrlGetToHtmlDocument(url)).Content.Source.Text;
 
             if (result.Contains("SCAMMER"))
             {
@@ -289,51 +291,69 @@ namespace SteamInviteHelper_ASF
         private static async Task<Action> processCommentedOnProfile(UserProfile userProfile, Bot bot)
         {
             WebBrowser webBrowser = ASF.WebBrowser;
-            JObject response = (await webBrowser.UrlGetToJsonObject<JObject>("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID)).Content;
+            IDocument htmlDocument = (await webBrowser.UrlGetToHtmlDocument("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID)).Content;
 
-            if (!response.GetValue("success").ToObject<bool>())
-                return new Action("none");
-
-            HtmlDocument htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(response.GetValue("comments_html").ToString());
-
-            List<KeyValuePair<string, string>> comments = new List<KeyValuePair<string, string>>();
-            var nodes = htmlDocument.DocumentNode.SelectNodes(@"//div[contains(@class,  'commentthread_comment') and contains(@class, 'responsive_body_text')]");
-
-            foreach (HtmlNode node in nodes)
+            if (htmlDocument == null)
             {
-                HtmlNode authorLinkNode = node.SelectSingleNode(@".//a[contains(@class, 'hoverunderline') and contains(@class, 'commentthread_author_link')]");
-                HtmlNode commentNode = node.SelectSingleNode(@".//div[contains(@class, 'commentthread_comment_text')]");
-
-                Uri authorUri = new Uri(authorLinkNode.GetAttributeValue("href", ""));
-                string comment = commentNode.InnerText.Trim().Normalize();
-
-                string authorProfileID = authorUri.Segments[authorUri.Segments.Count() - 1].Replace(@"/", "");
-                comments.Add(new KeyValuePair<string, string>(authorProfileID, comment));
+                return new Action("none");
             }
 
-            Uri senderProfileUri = new Uri(userProfile.profileUrl);
-            string senderProfileID = senderProfileUri.Segments[senderProfileUri.Segments.Count() - 1].Replace(@"/", "");
+            List<KeyValuePair<string, string>> comments = new List<KeyValuePair<string, string>>();
+            var nodes = htmlDocument.QuerySelectorAll("div.commentthread_comment");
+            var groupedData = new List<KeyValuePair<string, string>>().ToLookup(x => x.Key, x => x.Value);
+
+            if (nodes != null)
+            {
+                foreach (var node in nodes)
+                {
+                    var authorLinkNode = node.QuerySelector("a.commentthread_author_link");
+                    var commentNode = node.QuerySelector("div.commentthread_comment_text");
+
+                    Uri authorUri = new Uri(authorLinkNode.GetAttribute("href"));
+                    string comment = commentNode.Text().Trim().Normalize();
+
+                    string authorProfileID = authorUri.Segments[authorUri.Segments.Count() - 1].Replace(@"/", "");
+                    comments.Add(new KeyValuePair<string, string>(authorProfileID, comment));
+                }
+
+                Uri senderProfileUri = new Uri(userProfile.profileUrl);
+                string senderProfileID = senderProfileUri.Segments[senderProfileUri.Segments.Count() - 1].Replace(@"/", "");
+
+                groupedData = comments.ToLookup(x => x.Key, x => x.Value);
+            }
 
             Config.FriendInviteConfigs.TryGetValue(bot, out Config config);
-
-            var groupedData = comments.ToLookup(x => x.Key, x => x.Value);
+            string defaultAction = "none";
 
             foreach (ConfigItem item in config.Comments)
             {
                 switch (item.condition)
                 {
-                    case "commented":
-                        if (groupedData.)
-                        {
+                    case "less_than":
+                        if (!groupedData.Contains(userProfile.steamId64.ToString()) && (Convert.ToInt32(item.value) > 0))
+                            return new Action(item.action, "Number of comments < " + Convert.ToInt32(item.value));
 
-                        }
+                        if (groupedData.Contains(userProfile.steamId64.ToString()) && (groupedData[userProfile.steamId64.ToString()].Count() < Convert.ToInt32(item.value)))
+                            return new Action(item.action, "Number of comments < " + Convert.ToInt32(item.value));
+                        break;
+                    case "more_than":
+                        if (groupedData.Contains(userProfile.steamId64.ToString()) && (groupedData[userProfile.steamId64.ToString()].Count() > Convert.ToInt32(item.value)))
+                            return new Action(item.action, "Number of comments > " + Convert.ToInt32(item.value));
+                        break;
+                    case "equal":
+                        if (groupedData.Contains(userProfile.steamId64.ToString()) && groupedData[userProfile.steamId64.ToString()].Contains(item.value))
+                            return new Action(item.action, "Comment is " + item.value);
                         break;
                     case "contain":
+                        if (groupedData.Contains(userProfile.steamId64.ToString()) && (groupedData[userProfile.steamId64.ToString()].Where(comment => comment.Contains(item.value, StringComparison.OrdinalIgnoreCase)).Count() > 0))
+                            return new Action(item.action, "Profile comment contains " + item.value);
+                        break;
+                    case "default":
+                        defaultAction = item.action;
                         break;
                 }
             }
-            return null;
+            return new Action(defaultAction);
         }
 
         public override void HandleMsg(IPacketMsg packetMsg)

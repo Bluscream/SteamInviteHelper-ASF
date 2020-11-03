@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>SteamInviteHelper_ASF</RootNamespace>
-    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="System.Composition.AttributedModel" Version="*" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="SteamKit2" Version="*" />
   </ItemGroup>
@@ -21,9 +21,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ArchiSteamFarm\ArchiSteamFarm\ArchiSteamFarm.csproj" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)ArchiSteamFarm\ArchiSteamFarm\bin\Release\netcoreapp2.2\plugins\SteamInviteHelper-ASF&quot;" />
-  </Target>
 
 </Project>
