@@ -6,16 +6,8 @@
     <AssemblyVersion>1.0.4</AssemblyVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath></OutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Composition.AttributedModel" Version="*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SteamKit2" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
