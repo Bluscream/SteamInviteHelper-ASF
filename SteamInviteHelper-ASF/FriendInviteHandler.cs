@@ -291,12 +291,15 @@ namespace SteamInviteHelper_ASF
         private static async Task<Action> processCommentedOnProfile(UserProfile userProfile, Bot bot)
         {
             WebBrowser webBrowser = ASF.WebBrowser;
-            IDocument htmlDocument = (await webBrowser.UrlGetToHtmlDocument("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID)).Content;
+            JObject response = (await webBrowser.UrlGetToJsonObject<JObject>("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID)).Content;
 
-            if (htmlDocument == null)
+            if (!response.GetValue("success").ToObject<bool>())
             {
                 return new Action("none");
             }
+
+            var context = BrowsingContext.New(Configuration.Default);
+            var htmlDocument = await context.OpenAsync(req => req.Content(response.GetValue("comments_html").ToString()));
 
             List<KeyValuePair<string, string>> comments = new List<KeyValuePair<string, string>>();
             var nodes = htmlDocument.QuerySelectorAll("div.commentthread_comment");
