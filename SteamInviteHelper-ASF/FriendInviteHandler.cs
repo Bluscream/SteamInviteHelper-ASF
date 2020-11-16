@@ -17,39 +17,39 @@ namespace SteamInviteHelper_ASF
         {
             SteamFriends steamFriends = Client.GetHandler<SteamFriends>();
             UserProfile userProfile = await UserProfile.BuildUserProfile(SteamID.ConvertToUInt64(), bot);
-            Logger.LogDebug("[PROFILE DETAILS]: " + userProfile.ToString());
+            bot.ArchiLogger.LogGenericDebug("[PROFILE DETAILS]: " + userProfile.ToString());
 
             List<Action> actions = new List<Action>();
 
             actions.Add(processPrivateProfile(userProfile, bot));
-            Logger.LogDebug("[ACTION PRIVATE PROFILE]: " + processPrivateProfile(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION PRIVATE PROFILE]: " + processPrivateProfile(userProfile, bot).action);
 
             actions.Add(await processSteamRepScammerAsync(userProfile, bot));
-            Logger.LogDebug("[ACTION STAEMREP SCAMMER]: " + (await processSteamRepScammerAsync(userProfile, bot)).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION STAEMREP SCAMMER]: " + (await processSteamRepScammerAsync(userProfile, bot)).action);
 
             actions.Add(processSteamLevel(userProfile, bot));
-            Logger.LogDebug("[ACTION STEAM LEVEL]: " + processSteamLevel(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION STEAM LEVEL]: " + processSteamLevel(userProfile, bot).action);
 
             actions.Add(processVACBanned(userProfile, bot));
-            Logger.LogDebug("[ACTION VAC BANNED]: " + processVACBanned(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION VAC BANNED]: " + processVACBanned(userProfile, bot).action);
 
             actions.Add(processGameBanned(userProfile, bot));
-            Logger.LogDebug("[ACTION GAME BANNED]: " + processGameBanned(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION GAME BANNED]: " + processGameBanned(userProfile, bot).action);
 
             actions.Add(processDaysSinceLastBan(userProfile, bot));
-            Logger.LogDebug("[ACTION DAYS SINCE LAST BAN]: " + processDaysSinceLastBan(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION DAYS SINCE LAST BAN]: " + processDaysSinceLastBan(userProfile, bot).action);
 
             actions.Add(processCommunityBanned(userProfile, bot));
-            Logger.LogDebug("[ACTION COMMUNITY BANNED]: " + processCommunityBanned(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION COMMUNITY BANNED]: " + processCommunityBanned(userProfile, bot).action);
 
             actions.Add(processEconomyBanned(userProfile, bot));
-            Logger.LogDebug("[ACTION ECONOMY BANNED]: " + processEconomyBanned(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION ECONOMY BANNED]: " + processEconomyBanned(userProfile, bot).action);
 
             actions.Add(processProfileName(userProfile, bot));
-            Logger.LogDebug("[ACTION PROFILE NAME]: " + processProfileName(userProfile, bot).action);
+            bot.ArchiLogger.LogGenericDebug("[ACTION PROFILE NAME]: " + processProfileName(userProfile, bot).action);
 
             actions.Add(await processCommentedOnProfile(userProfile, bot));
-            Logger.LogDebug("[ACTION COMMENTED]: " + await processCommentedOnProfile(userProfile, bot));
+            bot.ArchiLogger.LogGenericDebug("[ACTION COMMENTED]: " + await processCommentedOnProfile(userProfile, bot));
 
             Config.FriendInviteConfigs.TryGetValue(bot, out Config config);
             List<string> actionpriority = config.ActionPriority;
@@ -74,10 +74,10 @@ namespace SteamInviteHelper_ASF
                             break;
                     }
 
-                    Logger.LogInfo("New pending invite from {0}", userProfile.personaName);
-                    Logger.LogInfo("  ├─ SteamID: {0}", Convert.ToString(SteamID.ConvertToUInt64()));
-                    Logger.LogInfo("  ├─ Profile url: {0}", userProfile.profileUrl);
-                    Logger.LogInfo("  └─ Action: {0} | Reason: {1}", action.action.ToUpper(), action.reason);
+                    bot.ArchiLogger.LogGenericInfo("New pending invite from " + userProfile.personaName);
+                    bot.ArchiLogger.LogGenericInfo("  ├─ SteamID: " + Convert.ToString(SteamID.ConvertToUInt64()));
+                    bot.ArchiLogger.LogGenericInfo("  ├─ Profile url: " + userProfile.profileUrl);
+                    bot.ArchiLogger.LogGenericInfo("  └─ Action: " + action.action.ToUpper() + " | Reason: " + action.reason);
                 }
             }
             return true;

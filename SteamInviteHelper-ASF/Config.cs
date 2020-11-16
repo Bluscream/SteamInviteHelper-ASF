@@ -12,7 +12,7 @@ namespace SteamInviteHelper_ASF
 {
     class Config
     {
-        private const string defaultConfig = @"{""SteamInviteHelper"":{""Enabled"":true,""ActionPriority"":[""block"",""ignore"",""add"",""none""],""PrivateProfile"":{""action"":""block""},""SteamRepScammer"":{""action"":""block""},""SteamLevel"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""less_than"",""value"":1,""action"":""block""},{""condition"":""less_than"",""value"":5,""action"":""ignore""}],""VACBanned"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""more_than"",""value"":1,""action"":""ignore""}],""GameBanned"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""more_than"",""value"":1,""action"":""ignore""}],""DaysSinceLastBan"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""less_than"",""value"":90,""action"":""ignore""}],""CommunityBanned"":{""action"":""none""},""EconomyBanned"":{""action"":""none""},""ProfileName"":[{""condition"":""default"",""value"":"""",""action"":""none""},{""condition"":""contain"",""value"":""shittygamblingsite.com"",""action"":""ignore""}],""Comments"":[{""condition"":""default"",""value"":"""",""action"":""none""},{""condition"":""less_than"",""value"":""1"",""action"":""ignore""}]}}";
+        private const string defaultConfig = @"{""SteamInviteHelper"":{""Enabled"":false,""ActionPriority"":[""block"",""ignore"",""add"",""none""],""PrivateProfile"":{""action"":""block""},""SteamRepScammer"":{""action"":""block""},""SteamLevel"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""less_than"",""value"":1,""action"":""block""},{""condition"":""less_than"",""value"":5,""action"":""ignore""}],""VACBanned"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""more_than"",""value"":1,""action"":""ignore""}],""GameBanned"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""more_than"",""value"":1,""action"":""ignore""}],""DaysSinceLastBan"":[{""condition"":""default"",""value"":-1,""action"":""none""},{""condition"":""less_than"",""value"":90,""action"":""ignore""}],""CommunityBanned"":{""action"":""none""},""EconomyBanned"":{""action"":""none""},""ProfileName"":[{""condition"":""default"",""value"":"""",""action"":""none""},{""condition"":""contain"",""value"":""shittygamblingsite.com"",""action"":""ignore""}],""Comments"":[{""condition"":""default"",""value"":"""",""action"":""none""},{""condition"":""less_than"",""value"":""1"",""action"":""ignore""}]}}";
         public static ConcurrentDictionary<Bot, Config> FriendInviteConfigs = new ConcurrentDictionary<Bot, Config>();
 
         public bool Enabled { get; set; }
@@ -52,16 +52,11 @@ namespace SteamInviteHelper_ASF
             }
             catch (Exception e)
             {
-                Logger.LogError("Error when loading config file");
-                Logger.LogError("Exception: " + e.Message);
-                Logger.LogError("Exiting in 5 seconds...");
+                bot.ArchiLogger.LogGenericError("Error when loading config file");
+                bot.ArchiLogger.LogGenericError("Exception: " + e.Message);
+                bot.ArchiLogger.LogGenericError("Exiting in 5 seconds...");
                 Thread.Sleep(5000);
                 Environment.Exit(1);
-            }
-
-            if (!Enabled)
-            {
-                Logger.LogInfo("SteamInviteHelper is disabled for bot {0}!", bot.Nickname);
             }
         }
 
@@ -80,15 +75,15 @@ namespace SteamInviteHelper_ASF
                     o.Merge(defaultConfigJson);
 
                     File.WriteAllText(configpath, o.ToString());
-                    Logger.LogWarning("Config not found! Loading default config...");
-                    Logger.LogWarning("Saved default config, please review and edit your bot's config!");
+                    bot.ArchiLogger.LogGenericWarning("Config not found! Loading default config...");
+                    bot.ArchiLogger.LogGenericWarning("Saved default config, please review and edit your bot's config!");
                 }
             }
             catch (Exception e)
             {
-                Logger.LogError("Something went wrong while trying to add the default config...");
-                Logger.LogError("Exception: " + e.Message);
-                Logger.LogError("Exiting in 5 seconds...");
+                bot.ArchiLogger.LogGenericError("Something went wrong while trying to add the default config...");
+                bot.ArchiLogger.LogGenericError("Exception: " + e.Message);
+                bot.ArchiLogger.LogGenericError("Exiting in 5 seconds...");
                 Thread.Sleep(5000);
                 Environment.Exit(1);
             }
