@@ -48,14 +48,7 @@ namespace SteamInviteHelper_ASF
             return false;
         }
 
-        public void OnBotInit(Bot bot) {
-            Config.FriendInviteConfigs.TryGetValue(bot, out Config config);
-            if (config.Enabled) {
-                bot.ArchiLogger.LogGenericInfo("SIH enabled.");
-            } else {
-                bot.ArchiLogger.LogGenericDebug("SIH disabled.");
-            }
-        }
+        public void OnBotInit(Bot bot) { }
 
         public void OnBotInitModules(Bot bot, IReadOnlyDictionary<string, JToken> additionalConfigProperties = null)
         {
@@ -75,6 +68,13 @@ namespace SteamInviteHelper_ASF
             else
             {
                 Config.AppendDefaultConfig(bot);
+            }
+
+            Config.FriendInviteConfigs.TryGetValue(bot, out Config config);
+            if (config.Enabled) {
+                bot.ArchiLogger.LogGenericInfo("SIH enabled.");
+            } else {
+                bot.ArchiLogger.LogGenericDebug("SIH disabled.");
             }
         }
 
