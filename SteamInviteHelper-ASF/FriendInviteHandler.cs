@@ -1,4 +1,6 @@
-﻿using ArchiSteamFarm;
+﻿using ArchiSteamFarm.Core;
+using ArchiSteamFarm.Steam;
+using ArchiSteamFarm.Web;
 using AngleSharp;
 using AngleSharp.Dom;
 using Newtonsoft.Json.Linq;
@@ -99,7 +101,7 @@ namespace SteamInviteHelper_ASF
         private static async Task<Action> processSteamRepScammerAsync(UserProfile userProfile, Bot bot)
         {
             WebBrowser wb = bot.ArchiWebHandler.WebBrowser;
-            string url = "http://steamrep.com/id2rep.php?steamID32=" + new SteamID(userProfile.steamId64).Render();
+            Uri url = new("http://steamrep.com/id2rep.php?steamID32=" + new SteamID(userProfile.steamId64).Render());
             string result = (await wb.UrlGetToHtmlDocument(url)).Content.Source.Text;
 
             if (result.Contains("SCAMMER"))
@@ -291,7 +293,8 @@ namespace SteamInviteHelper_ASF
         private static async Task<Action> processCommentedOnProfile(UserProfile userProfile, Bot bot)
         {
             WebBrowser webBrowser = ASF.WebBrowser;
-            JObject response = (await webBrowser.UrlGetToJsonObject<JObject>("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID)).Content;
+            Uri url = new("https://steamcommunity.com/comment/Profile/render/" + bot.SteamID);
+            JObject response = (await webBrowser.UrlGetToJsonObject<JObject>(url)).Content;
 
             if (!response.GetValue("success").ToObject<bool>())
             {

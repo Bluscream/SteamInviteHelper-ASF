@@ -1,4 +1,4 @@
-﻿using ArchiSteamFarm;
+﻿using ArchiSteamFarm.Steam;
 using SteamKit2;
 using System.Collections.Concurrent;
 using System.Text;
@@ -25,7 +25,7 @@ namespace SteamInviteHelper_ASF
         //If set, indicates the profile allows public comments.
         public int commentPermission { get; set; }
 
-        //The user's current status. 0 - Offline, 1 - Online, 2 - Busy, 3 - Away, 4 - Snooze, 5 - looking to trade, 6 - looking to play. 
+        //The user's current status. 0 - Offline, 1 - Online, 2 - Busy, 3 - Away, 4 - Snooze, 5 - looking to trade, 6 - looking to play.
         //If the player's profile is private, this will always be "0", except if the user has set their status to looking to trade or looking to play, because a bug makes those status appear even if the profile is private.
         public int personaState { get; set; }
 

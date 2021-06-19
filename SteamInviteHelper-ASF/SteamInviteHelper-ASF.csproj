@@ -3,7 +3,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net50</TargetFramework>
     <RootNamespace>SteamInviteHelper_ASF</RootNamespace>
-    <AssemblyVersion>1.0.5</AssemblyVersion>
+    <AssemblyVersion>1.0.6</AssemblyVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- <Nullable>enable</Nullable> -->
   </PropertyGroup>

@@ -1,4 +1,4 @@
-﻿using ArchiSteamFarm;
+﻿using ArchiSteamFarm.Steam;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

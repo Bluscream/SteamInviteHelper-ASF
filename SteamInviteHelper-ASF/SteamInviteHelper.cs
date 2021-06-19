@@ -1,5 +1,5 @@
-﻿using ArchiSteamFarm;
-using ArchiSteamFarm.Plugins;
+﻿using ArchiSteamFarm.Steam;
+using ArchiSteamFarm.Plugins.Interfaces;
 using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using SteamKit2;
