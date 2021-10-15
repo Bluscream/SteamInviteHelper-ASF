@@ -3,7 +3,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net50</TargetFramework>
     <RootNamespace>SteamInviteHelper_ASF</RootNamespace>
-    <AssemblyVersion>1.0.6</AssemblyVersion>
+    <AssemblyVersion>1.0.7</AssemblyVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- <Nullable>enable</Nullable> -->
   </PropertyGroup>
@@ -12,7 +12,7 @@
     <PackageReference Include="AngleSharp.XPath" Version="*" />
     <PackageReference Include="JetBrains.Annotations" Version="*" />
     <PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" Version="*" />
-    <PackageReference Include="SteamKit2" IncludeAssets="compile" Version="*" />
+    <PackageReference Include="SteamKit2" IncludeAssets="compile" Version="2.4.0-alpha.3" />
     <PackageReference Include="System.Composition.AttributedModel" IncludeAssets="compile" Version="*" />
   </ItemGroup>
 
