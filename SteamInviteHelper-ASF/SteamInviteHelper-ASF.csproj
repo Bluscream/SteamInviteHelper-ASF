@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net50</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>SteamInviteHelper_ASF</RootNamespace>
     <AssemblyVersion>1.0.7</AssemblyVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -11,13 +11,15 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp.XPath" Version="*" />
     <PackageReference Include="JetBrains.Annotations" Version="*" />
+    <PackageReference Include="SteamKit2" IncludeAssets="compile" Version="*" />
     <PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" Version="*" />
-    <PackageReference Include="SteamKit2" IncludeAssets="compile" Version="2.4.0-alpha.3" />
     <PackageReference Include="System.Composition.AttributedModel" IncludeAssets="compile" Version="*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ArchiSteamFarm\ArchiSteamFarm\ArchiSteamFarm.csproj" ExcludeAssets="all" Private="false" />
+    <Reference Include="ArchiSteamFarm">
+      <HintPath>D:\Downloads\ASF-generic\ArchiSteamFarm.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
